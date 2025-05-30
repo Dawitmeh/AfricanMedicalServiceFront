@@ -16,6 +16,7 @@ export const useClientStore = defineStore('clients', {
             message: null
         }, 
         isLoading: ref(true),
+        countries: []
     }),
     getters: {
         isAuthenticated: (state) => !!state.clients.token
@@ -35,7 +36,7 @@ export const useClientStore = defineStore('clients', {
                     this.clients.data = data.user
                     this.clients.token = data.token
                     sessionStorage.setItem('TOKEN', data.token)
-                    sessionStorage.setTimeout('USER_DATA', JSON.stringify(data.user))
+                    sessionStorage.setItem('USER_DATA', JSON.stringify(data.user))
                 })
         },
         login(client) {
@@ -55,10 +56,16 @@ export const useClientStore = defineStore('clients', {
         },
         logout() {
             this.clients.data = {}
-            this.user.token = null;
+            this.clients.token = null;
 
             sessionStorage.removeItem('TOKEN');
             sessionStorage.removeItem('USER_DATA')
+        },
+        getCountries() {
+            return axiosClient.get('/countries')
+                .then((res) => {
+                    this.countries = res.data.data
+                })
         }
     }
 })

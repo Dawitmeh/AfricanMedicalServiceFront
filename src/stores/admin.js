@@ -8,9 +8,47 @@ export const useAdminStore = defineStore('admin', {
         admin: {
             data: JSON.parse(sessionStorage.getItem('USER_DATA')) || {},
             token: sessionStorage.getItem('TOKEN') || null,
-        }
+        },
+        errMsg: [],
+        notification: {
+            show: false,
+            type: null,
+            message: null
+        }, 
+        isLoading: ref(true),
     }),
     getters: {
         isAuthenticated: (state) => !!state.admin.token
+    },
+    actions: {
+        notify({message, type}) {
+            this.notification.show = true
+            this.notification.type = type
+            this.notification.message = message
+            setTimeout(() => {
+                this.notification.show = false
+            }, 3000)
+        },
+        login(admin) {
+            return axiosAdmin.post('/adminlogin', admin)
+                .then(({ data }) => {
+                    this.admin.data = data.user
+                    this.admin.token = data.token
+                    sessionStorage.setItem('TOKEN', data.token)
+                    sessionStorage.setItem('USER_DATA', JSON.stringify(data.user))
+                })
+                .catch((err) => {
+                    this.errMsg = err.response.data ? err.response.data : "Access denied."
+                    setTimeout(() => {
+                        this.errMsg = false
+                    }, 300)
+                })
+        },
+        logout() {
+            this.admin.data = {}
+            this.admin.token = null
+            sessionStorage.removeItem('TOKEN')
+            sessionStorage.removeItem('USER_DATA')
+        }
     }
 })
