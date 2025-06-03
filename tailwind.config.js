@@ -25,7 +25,9 @@ module.exports = {
   },
     extend: {
       colors: {
+        
         "theme-primary": "#5368DF",
+        "theme-main": "#007c92",
                 "theme-secondary": "#FA5757",
                 "theme-grayish-blue": "#9194A1",
                 "theme-dark-blue": "rgb(37, 43, 70)",

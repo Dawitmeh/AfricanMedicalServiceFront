@@ -1,6 +1,6 @@
 <template>
     <AdminPageComponent>
-        <h1>Documents</h1>
+        <h1>Inquiry</h1>
     </AdminPageComponent>
 </template>
 

@@ -1,8 +1,9 @@
 <template>
     <AdminPageComponent>
-        <h1>Documents</h1>
+        <h1>Document Format</h1>
     </AdminPageComponent>
 </template>
+
 
 
 <script setup>

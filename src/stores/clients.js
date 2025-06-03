@@ -8,6 +8,7 @@ export const useClientStore = defineStore('clients', {
         clients: {
             data: JSON.parse(sessionStorage.getItem('USER_DATA')) || {},
             token: sessionStorage.getItem('TOKEN') || null,
+            user_type: ''
         },
         errMsg: [],
         notification: {
@@ -44,8 +45,10 @@ export const useClientStore = defineStore('clients', {
                 .then(({ data }) => {
                     this.clients.data = data.user
                     this.clients.token = data.token
+                    this.clients.user_type = data.user.userType
                     sessionStorage.setItem('TOKEN', data.token)
                     sessionStorage.setItem('USER_DATA', JSON.stringify(data.user))
+                    sessionStorage.setItem('USER_TYPE', data.user.userType)
                 })
                 .catch((err) => {
                     this.errMsg = err.response.data ? err.response.data : "Access denied."
