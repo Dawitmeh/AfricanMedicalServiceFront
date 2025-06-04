@@ -25,6 +25,7 @@ if (sessionStorage.getItem('TOKEN')) {
     adminStore.admin.user_type = sessionStorage.getItem('USER_TYPE') || ''
 }
 
+import '../node_modules/flowbite-vue/dist/index.css'
 
 app.use(router)
 app.mount('#app')
