@@ -49,6 +49,16 @@ const routes = [
         redirect: '/dashboard',
         component: ClientDefaultLayout,
         meta: { requiresAuth: true, userType: 'client' },
+        // beforeEnter: async (to, from, next) => {
+        //     const clientStore = useClientStore()
+
+        //     await clientStore.initialize()
+        //         if (clientStore.isAuthenticated && clientStore.clients.user_type == 'client') {
+        //             next();
+        //         } else {
+        //             next({name: })
+        //         }
+        // },
         children: [
             {path: '/dashboard', name: 'ClientDashboard', component: ClientDashboard},
             // {path: '/'}

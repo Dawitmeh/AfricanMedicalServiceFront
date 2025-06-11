@@ -23,6 +23,37 @@ export const useClientStore = defineStore('clients', {
         isAuthenticated: (state) => !!state.clients.token
     },
     actions: {
+        initialize() {
+            return new Promise((resolve) => {
+                // console.log('Initializing client store...');
+                const token = sessionStorage.getItem('TOKEN');
+                const user_type = sessionStorage.getItem('user_type') === 'client';
+                
+                if (token) {
+                    // console.log('Token found:', token);
+                    this.clients.token = token;
+                    this.clients.user_type = user_type;
+                } else {
+                    // console.log('No token found, clearing user.');
+                    this.clearUser();
+                }
+                
+                this.isLoading = false;
+                // console.log('Initialization complete.');
+                resolve();
+            });
+        },
+        setUser(user) {
+            this.clients.data = user;
+            this.clients.token = user.token;
+            sessionStorage.setItem('TOKEN', user.token);
+            sessionStorage.setItem('user_type', user.user_type)
+        },
+        clearUser() {
+            this.user = { data: {}, token: null };
+            sessionStorage.removeItem('TOKEN');
+            sessionStorage.removeItem('user_type')
+        },
         notify({message, type}) {
             this.notification.show = true
             this.notification.type = type
