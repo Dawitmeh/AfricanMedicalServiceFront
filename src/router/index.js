@@ -22,6 +22,7 @@ import UserIndex from "@/views/Admin/Users/UserIndex.vue"
 import StaffIndex from "@/views/Admin/Staffs/StaffIndex.vue"
 import HospitalView from "@/views/Admin/Hospital/HospitalView.vue"
 import ProductView from "@/views/Admin/Products/ProductView.vue"
+import UserView from "@/views/Admin/Users/UserView.vue"
 
 const routes = [
 
@@ -114,6 +115,7 @@ const routes = [
 
             // Users 
             {path: '/adminclients', name: 'AdminClients', component: UserIndex},
+            {path: '/adminclientview/:id', name: 'AdminClientView', component: UserView},
             {path: '/adminstaffs', name: 'AdminStaffs', component: StaffIndex}
         ]
     }

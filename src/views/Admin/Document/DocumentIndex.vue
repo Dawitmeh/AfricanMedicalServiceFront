@@ -13,6 +13,15 @@
                 </router-link>
               </div>
          </div>
+          <div class="mt-3 mb-3">
+            <div
+              v-if="notification.show == true"
+              class="p-3 text-white animate-fade-in-down rounded-md"
+              :class="[notification.type === 'success' ?  'bg-emerald-500' : 'bg-red-500']"
+              >
+                {{ notification.message }}
+            </div>
+        </div>
          <div class="mt-5 relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4">
               <div class="w-full md:w-1/2">
@@ -57,17 +66,22 @@
             <div class="relative" v-for="document in documents" :key="document.id">
                 <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
                     <div class="h-48 w-full overflow-hidden rounded-sm mb-2 shadow-sm">
-                        <img :src="document.document" alt="Flag of {{ document.document }}" class="w-full h-full object-cover shadow" v-if="hospital?.name" />
+                        <!-- <img :src="document.document" alt="Flag of {{ document.document }}" class="w-full h-full object-cover shadow" v-if="hospital?.name" /> -->
+                         <iframe 
+                            :src="document.document" 
+                            class="w-full h-full" 
+                            frameborder="0"
+                        ></iframe>
                     </div>
                     <div>
-                        <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ hospital?.name }}</h5>
+                        <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ document?.document_type?.name }} File</h5>
                     </div>
                     <ul class="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
                         <li class="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 me-2 text-green-500 dark:text-green-400 shrink-0">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
-                            <legend>{{ document?.client?.first_name }}</legend>
+                            <legend>{{ document?.client?.first_name }} {{ document?.client?.last_name }}</legend>
                         </li>
                         <li class="flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 me-2 text-green-500 dark:text-green-400 shrink-0">
@@ -84,15 +98,15 @@
                         </li>
                     </ul>
                     <div class="mt-3">
-                    <button @click="openEditModal(hospital.id)" class="inline-flex font-medium items-center text-blue-600 hover:underline">
+                    <button @click="openEditModal(document.id)" class="inline-flex font-medium items-center text-blue-600 hover:underline">
                         Edit
                     </button>
-                    <router-link v-if="hospital?.id" :to="{name: 'AdminHospitalView', params: {id: hospital.id}}" class="inline-flex float-right font-medium items-center text-theme-main hover:underline">
-                        Detail
+                    <a :href="document.document" target="_blank" class="inline-flex float-right font-medium items-center text-theme-main hover:underline">
+                        Preview
                         <svg class="w-3 h-3 ms-2.5 rtl:rotate-[270deg]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11v4.833A1.166 1.166 0 0 1 13.833 17H2.167A1.167 1.167 0 0 1 1 15.833V4.167A1.166 1.166 0 0 1 2.167 3h4.618m4.447-2H17v5.768M9.111 8.889l7.778-7.778"/>
                         </svg>
-                    </router-link>
+                    </a>
                     </div>
                 </div>
             </div>
@@ -160,7 +174,6 @@
                                 >
                                     <input 
                                     type="file" 
-                                    accept="image/*"
                                     ref="fileInput"
                                     @change="onImageChoose"
                                     class="absolute left-0 top-0 right-0 bottom-0 opacity-0 cursor-pointer"
@@ -169,19 +182,45 @@
                                 </button>
 
                                 <!-- Show preview -->
-                                <div v-if="imagePreview" class="mt-4">
+                                <!-- <div v-if="selectedFiles[0]" class="mt-4">
                                     <p class="text-sm text-gray-500 mb-2">Preview:</p>
-                                    <div class="relative w-32 h-20">
-                                    <img :src="imagePreview" alt="Selected Flag" class="object-cover w-full h-full rounded shadow" />
-                                    <button @click="removeFile" class="absolute top-0 right-0 bg-white text-red-500 p-1 rounded-full shadow">
+                                    <div class="relative w-fit max-w-xs bg-gray-100 p-2 rounded shadow-sm">
+                                    
+                                      <p class="text-gray-700 text-sm font-medium truncate mr-6">
+                                        {{ selectedFiles[0]?.name }}
+                                      </p>
+                                    <button @click="removeFile" class="absolute top-0 right-0 ml-6 bg-white text-red-500 p-1 rounded-full shadow">
                                         ✕
                                     </button>
                                     </div>
+                                </div> -->
+                                <div v-if="selectedFiles?.name || document?.document" class="mt-4">
+                                    <p class="text-sm text-gray-500 mb-2">Preview:</p>
+                                    
+                                    <div class="relative w-fit max-w-xs bg-gray-100 p-2 rounded shadow-sm">
+                                        <template v-if="selectedFiles?.name">
+                                            <p class="text-gray-700 text-sm font-medium truncate mr-6">
+                                                {{ selectedFiles.name }}
+                                            </p>
+                                        </template>
+                                        <template v-else>
+                                            <a 
+                                                :href="document.document" 
+                                                target="_blank" 
+                                                class="text-emerald-600 underline text-sm"
+                                            >
+                                                View current document
+                                            </a>
+                                        </template>
+                                        
+                                        <button @click="removeFile" class="absolute top-0 right-0 ml-6 bg-white text-red-500 p-1 rounded-full shadow">
+                                            ✕
+                                        </button>
+                                    </div>
                                 </div>
-
                                 <!-- Validation error -->
-                                <div v-if="validationErr.image" class="text-red-500 text-xs mt-1">
-                                    {{ validationErr.image[0] }}
+                                <div v-if="validationErr.document" class="text-red-500 text-xs mt-1">
+                                    {{ validationErr.document[0] }}
                                 </div>
                                 </div>
 
@@ -241,8 +280,8 @@ watch(() => store.currentDocument,
                     }
                 }
 
-                imagePreview.value = newVal.document
-                selectedFiles.value = null
+                // imagePreview.value = newVal.document
+                selectedFiles.value = newVal.document
             }
 )
 
@@ -267,11 +306,23 @@ function validateForm() {
 function closeModal() {
     isShowModal.value = false
     isEditing.value = false
+    document.value = {
+         client_id: '',
+        type_id: '',
+        document: '',
+        document_url: ''
+    }
 }
 
 function showModal() {
     isShowModal.value = true
     isEditing.value = false
+    document.value = {
+         client_id: '',
+        type_id: '',
+        document: '',
+        document_url: ''
+    }
 }
 
 function openEditModal(selectedDocument) {
@@ -282,28 +333,42 @@ function openEditModal(selectedDocument) {
     isEditing.value = true
 }
 
-function onImageChoose(event) {
-  const file = event.target.files[0]
-  if (!file) return
+// function onImageChoose(event) {
+//   const file = event.target.files[0]
+//   if (!file) return
 
-  selectedFiles.value = file
-  document.value.image = file // send this to backend
+//   selectedFiles.value = file
+//   document.value.image = file // send this to backend
 
-  const reader = new FileReader()
-  reader.onload = () => {
-    imagePreview.value = reader.result
-    document.value.document_url = reader.result // preview only
-    document.value.document = reader.result
-  }
+//   const reader = new FileReader()
+//   reader.onload = () => {
+//     imagePreview.value = reader.result
+//     document.value.document_url = reader.result // preview only
+//     document.value.document = reader.result
+//   }
 
-  reader.readAsDataURL(file)
+//   reader.readAsDataURL(file)
+// }
+const getDocumentUrl = (path) => {
+    return path ? `/${path}` : ''
+}
+function removeFile() {
+  selectedFiles.value = [];
+  document.value.document = null;
+  document.value.document_url = null;
 }
 
-function removeFile() {
-    selectedFiles.value = null
-    imagePreview.value = null
-    document.value.document = null
-    document.value.document_url = null
+function onImageChoose(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  selectedFiles.value = [file];
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.value.document_url = reader.result; // For preview
+    document.value.document = reader.result
+  };
+  reader.readAsDataURL(file);
 }
 
 const errMsg = ref(false)
