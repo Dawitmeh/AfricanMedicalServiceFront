@@ -222,7 +222,7 @@ function onImageChoose(event) {
 
   reader.onload = (e) => {
     imagePreview.value = e.target.result
-    country.value.flag = file
+    country.value.flag = e.target.result
     country.value.flag_url = e.target.result
   }
 
@@ -306,7 +306,7 @@ function saveCountry(e) {
         // isLoading.value = false
         setTimeout(() => {
             validationErr.value = false
-        }, 2000)
+        }, 3000)
     }
 }
 

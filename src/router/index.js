@@ -23,6 +23,10 @@ import StaffIndex from "@/views/Admin/Staffs/StaffIndex.vue"
 import HospitalView from "@/views/Admin/Hospital/HospitalView.vue"
 import ProductView from "@/views/Admin/Products/ProductView.vue"
 import UserView from "@/views/Admin/Users/UserView.vue"
+import StaffView from "@/views/Admin/Staffs/StaffView.vue"
+import RoleIndex from "@/views/Admin/Roles/RoleIndex.vue"
+import PermissionIndex from "@/views/Admin/Permissions/PermissionIndex.vue"
+import RoleView from "@/views/Admin/Roles/RoleView.vue"
 
 const routes = [
 
@@ -116,7 +120,13 @@ const routes = [
             // Users 
             {path: '/adminclients', name: 'AdminClients', component: UserIndex},
             {path: '/adminclientview/:id', name: 'AdminClientView', component: UserView},
-            {path: '/adminstaffs', name: 'AdminStaffs', component: StaffIndex}
+            {path: '/adminstaffs', name: 'AdminStaffs', component: StaffIndex},
+            {path: '/adminstaffview/:id', name: 'AdminStaffView', component: StaffView},
+
+            // Role & Permissions
+            {path: '/roles', name: 'Roles', component: RoleIndex},
+            {path: '/role/view/:id', name: 'RoleView', component: RoleView},
+            {path: '/permissions', name: 'Permissions', component: PermissionIndex}
         ]
     }
 

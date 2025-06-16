@@ -36,7 +36,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 -mt-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
-                Add Currency
+                Add Permission
               </button>
             </div>
         </div>
@@ -49,36 +49,39 @@
                </div>
         </div>
         <div v-else class="grid sm:grid-cols-4 gap-4 mt-6">
-            <div class="relative" v-for="currency in currencies" :key="currency.id">
+            <div class="relative" v-for="permission in permissions" :key="permission.id">
                 <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
 
                 <!-- Flag Image -->
-                 <!-- {{  }} -->
-                <img :src="currency?.country?.flag_url" alt="Flag of {{ currency.country.name }}" class="w-10 h-6 object-cover mb-2 rounded-sm" v-if="currency?.country?.flag_url" />
-
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                  </svg>
                 <div>
-                    <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ currency?.name }}</h5>
+                    <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ permission?.name }}</h5>
                 </div>
-                <!-- <p class="mb-3 font-normal text-gray-500 dark:text-gray-400">Code: <small>{{ currency?.country?.code }}</small></p> -->
-                <button @click="openEditModal(currency.id)" class="inline-flex font-medium items-center text-blue-600 hover:underline">
+                <!-- <p class="mb-3 font-normal text-gray-500 dark:text-gray-400">Code: <small>{{ role?.code }}</small></p> -->
+                <button @click="openEditModal(permission.id)" class="inline-flex font-medium items-center text-blue-600 hover:underline">
                     Edit
                 </button>
-                <button @click="onRemove(currency?.id)" class="float-right inline-flex font-medium items-center text-red-600 hover:underline">
+                
+                <button @click="onRemove(permission?.id)" class="float-right inline-flex font-medium items-center text-red-600 hover:underline">
                     Remove
                 </button>
                 </div>
             </div>
+            
         </div>
 
         <!-- Modal -->
-         <fwb-modal v-if="isShowModal" @close="closeModal">
+          <!-- Modal -->
+          <fwb-modal v-if="isShowModal" @close="closeModal">
             <template #header>
               <div class="flex items-center text-lg text-gray-700">
-              {{ isEditing ? 'Edit Currency' : 'Add Currency' }}
+              {{ isEditing ? 'Edit Permission' : 'Add Permission' }}
               </div>
             </template>
             <template #body>
-              <form @submit="saveCurrency">
+              <form @submit="savePermission">
                       <div v-if="isLoading" class="text-center">
                         <div role="status">
                             <svg aria-hidden="true" class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,22 +100,11 @@
                         </div>
                       </div>
                     </div>
-                        <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                        <div class="grid gap-4 mb-4 sm:grid-cols-1">
+                            
                             <div>
-                                <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Country</label>
-                                <select id="category" v-model="currency.country_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option selected="">Select country</option>
-                                    <option v-for="country in countries" :key="country.id" :value="country.id">
-                                        {{ country?.name }}
-                                    </option>
-                                </select>
-                                <div v-if="validationErr.country_id" class="text-red-500 text-xs mt-1">
-                                    {{ validationErr?.country_id[0] }}
-                                </div>
-                            </div>
-                            <div>
-                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency Name</label>
-                                <input type="text" v-model="currency.name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="">
+                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role Name</label>
+                                <input type="text" v-model="permission.name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="">
                                 <div v-if="validationErr.name" class="text-red-500 text-xs mt-1">
                                   {{ validationErr.name[0] }}
                                 </div>
@@ -134,52 +126,48 @@
 </template>
 
 
+
 <script setup>
 import AdminPageComponent from '@/components/Admin/AdminPageComponent.vue';
-import { useCountryStore } from '@/stores/admincountry';
+import { usePermissionStore } from '@/stores/permissions';
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { FwbButton, FwbModal } from 'flowbite-vue'
 
 
-const store = useCountryStore()
+
+const store = usePermissionStore()
 
 
-const currencies = computed(() => store.currencies)
-const notification = computed(() => store.notification)
+const permissions = computed(() => store.permissions)
 const isLoading = computed(() => store.isLoading)
-const countries = computed(() => store.countries)
+const notification = computed(() => store.notification)
 
 
 
 const isShowModal = ref(false)
 const isEditing = ref(false)
 
-const currency = ref({
-    country_id: '',
+
+const permission = ref({
     name: ''
 })
 
-watch(() => store.currentCurrency,
+watch(() => store.currentPermission,
             (newVal, oldVal) => {
                 if (newVal !== undefined) {
-                        currency.value = {
+                    permission.value = {
                         ...JSON.parse(JSON.stringify(newVal))
                     }
                 }
-                
             }
 )
 
 const validationErr = ref({})
 
-
 function validateForm() {
     validationErr.value = {}
 
-    if (!currency.value.country_id) {
-        validationErr.value.country_id = ['Country is required']
-    }
-    if (!currency.value.name) {
+    if (!permission.value.name) {
         validationErr.value.name = ['Name is required']
     }
 
@@ -189,8 +177,7 @@ function validateForm() {
 function closeModal() {
     isShowModal.value = false
     isEditing.value = false
-    currency.value = {
-        country_id: '',
+    permission.value = {
         name: ''
     }
 }
@@ -198,15 +185,12 @@ function closeModal() {
 function showModal() {
     isShowModal.value = true
     isEditing.value = false
-    currency.value = {
-        country_id: '',
-        name: ''
-    }
+    permission.value = { name: ''}
 }
 
-function openEditModal(selectedCurrency) {
-    if (selectedCurrency) {
-        store.getCurrency(selectedCurrency)
+function openEditModal(selectedpermission) {
+    if (selectedpermission) {
+        store.getPermission(selectedpermission)
     }
     isShowModal.value = true
     isEditing.value = true
@@ -214,21 +198,20 @@ function openEditModal(selectedCurrency) {
 
 const errMsg = ref(false)
 
-function saveCurrency(e) {
-    e.preventDefault();
+function savePermission(e) {
+    e.preventDefault()
 
     if (validateForm()) {
         const action = isEditing.value ? 'updated' : 'created'
-        const apiCall = isEditing.value ? store.updateCurrency : store.createCurrency
-        apiCall({...currency.value})
+        const apiCall = isEditing.value ? store.updatePermission : store.createPermission
+        apiCall({...permission.value})
             .then(() => {
                 store.notify({
                     type: 'success',
-                    message: 'The currency was successfully ' + action
+                    message: 'The Permission was successfully ' + action
                 })
                 closeModal()
-                store.getCurrencies()
-                store.getCountries()
+                store.getPermissions()
             })
             .catch((err) => {
                 errMsg.value = err.response.data
@@ -237,8 +220,7 @@ function saveCurrency(e) {
                     validationErr.value = false
                     errMsg.value = false
                 }, 3000)
-                store.getCountries()
-                store.getCurrencies()
+                store.getPermissions()
             })
     } else {
         setTimeout(() => {
@@ -249,8 +231,6 @@ function saveCurrency(e) {
 
 
 onBeforeMount(() => {
-    store.getCountries()
-    store.getCurrencies()
+    store.getPermissions()
 })
-
 </script>

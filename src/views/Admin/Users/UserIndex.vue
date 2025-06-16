@@ -111,7 +111,7 @@
                             {{ client?.age }} 
                         </td>
                         <td class="px-6 py-4">
-                            <div v-if="client.active == 1" class="flex items-center">
+                            <div v-if="client.status == 'Active'" class="flex items-center">
                                 <div  class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Active
                             </div>
                             <div v-else class="flex items-center">
@@ -194,13 +194,13 @@
 
                                         <!-- Phone Input -->
                                         <input
-                                        type="number"
+                                        type="text"
                                         v-model="client.phone"
                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg focus:ring-blue-500 focus:border-blue-500 flex-1 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                         placeholder="Phone number"
                                         />
                                     </div>
-
+                                    
                                     <!-- Validation Error -->
                                     <div v-if="validationErr.phone" class="text-red-500 text-xs mt-1">
                                         {{ validationErr.phone[0] }}
@@ -258,9 +258,9 @@
                             <div>
                                 <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
                                 <input type="password" v-model="client.password_confirmation" name="confirm-password" id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <div v-if="validationErr.password_confirmation" class="text-red-500 text-xs mt-1">
+                                <!-- <div v-if="validationErr.password_confirmation" class="text-red-500 text-xs mt-1">
                                         {{ validationErr.password_confirmation[0] }}
-                                    </div> 
+                                    </div>  -->
                             </div>
 
                         </div>
@@ -335,6 +335,9 @@ const validationErr = ref({})
 const errMsg = ref([])
 
 function validateForm() {
+
+    validationErr.value = {}
+
     if (!client.value.first_name) {
         validationErr.value.first_name = ['First name is required']
     }
@@ -359,9 +362,9 @@ function validateForm() {
     if (!client.value.password) {
         validationErr.value.password = ['Password is required']
     }
-    if (!client.value.password_confirmation) {
-        validationErr.value.password_confirmation = ['Password confirmation is required']
-    }
+    // if (!client.value.password_confirmation) {
+    //     validationErr.value.password_confirmation = ['Password confirmation is required']
+    // }
 
     return Object.keys(validationErr.value).length === 0
 }
@@ -374,6 +377,19 @@ function closeModal() {
 function showModal() {
     isShowModal.value = true
     isEditing.value = false
+    client.value = {
+         first_name: '',
+        last_name: '',
+        age: '',
+        country_code: '',
+        email: '',
+        phone: '',
+        image: '',
+        image_url: '',
+        password: '',
+        password_confirmation: '',
+    }
+    imagePreview.value = null
 }
 
 function openEditModal(selectedClient) {
@@ -422,6 +438,7 @@ function saveClient(e) {
                 })
                 closeModal()
                 store.getClients()
+                countryStore.getCountries()
             })
             .catch((err) => {
                 errMsg.value = err.response.data
@@ -431,6 +448,7 @@ function saveClient(e) {
                     errMsg.value = false
                 }, 3000)
                 store.getClients()
+                countryStore.getCountries()
             })
     } else {
         setTimeout(() => {

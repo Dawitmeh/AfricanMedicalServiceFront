@@ -36,7 +36,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 -mt-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
-                Add Currency
+                Add Role
               </button>
             </div>
         </div>
@@ -48,37 +48,46 @@
                 </svg>
                </div>
         </div>
-        <div v-else class="grid sm:grid-cols-4 gap-4 mt-6">
-            <div class="relative" v-for="currency in currencies" :key="currency.id">
+        <div v-else class="grid sm:grid-cols-3 gap-4 mt-6">
+            <div class="relative" v-for="role in roles" :key="role.id">
                 <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
 
                 <!-- Flag Image -->
-                 <!-- {{  }} -->
-                <img :src="currency?.country?.flag_url" alt="Flag of {{ currency.country.name }}" class="w-10 h-6 object-cover mb-2 rounded-sm" v-if="currency?.country?.flag_url" />
-
+                <!-- <img :src="role.flag" alt="Flag of {{ role.name }}" class="w-10 h-6 object-cover mb-2 rounded-sm" v-if="role?.flag" /> -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
                 <div>
-                    <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ currency?.name }}</h5>
+                    <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ role?.name }}</h5>
                 </div>
-                <!-- <p class="mb-3 font-normal text-gray-500 dark:text-gray-400">Code: <small>{{ currency?.country?.code }}</small></p> -->
-                <button @click="openEditModal(currency.id)" class="inline-flex font-medium items-center text-blue-600 hover:underline">
+                <!-- <p class="mb-3 font-normal text-gray-500 dark:text-gray-400">Code: <small>{{ role?.code }}</small></p> -->
+                <button @click="openEditModal(role.id)" class="inline-flex font-medium items-center text-blue-600 hover:underline">
                     Edit
                 </button>
-                <button @click="onRemove(currency?.id)" class="float-right inline-flex font-medium items-center text-red-600 hover:underline">
+                
+                <button @click="onRemove(role?.id)" class="float-right inline-flex font-medium items-center text-red-600 hover:underline">
                     Remove
                 </button>
+                <router-link v-if="role?.id" :to="{name: 'RoleView', params: {id: role.id}}" class="inline-flex float-center ml-6 font-medium items-center text-theme-main hover:underline">
+                    Assign Permission
+                    <svg class="w-3 h-3 ms-2.5 rtl:rotate-[270deg]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11v4.833A1.166 1.166 0 0 1 13.833 17H2.167A1.167 1.167 0 0 1 1 15.833V4.167A1.166 1.166 0 0 1 2.167 3h4.618m4.447-2H17v5.768M9.111 8.889l7.778-7.778"/>
+                    </svg>
+                </router-link>
                 </div>
             </div>
+            
         </div>
 
         <!-- Modal -->
-         <fwb-modal v-if="isShowModal" @close="closeModal">
+          <fwb-modal v-if="isShowModal" @close="closeModal">
             <template #header>
               <div class="flex items-center text-lg text-gray-700">
-              {{ isEditing ? 'Edit Currency' : 'Add Currency' }}
+              {{ isEditing ? 'Edit Role' : 'Add Role' }}
               </div>
             </template>
             <template #body>
-              <form @submit="saveCurrency">
+              <form @submit="saveRole">
                       <div v-if="isLoading" class="text-center">
                         <div role="status">
                             <svg aria-hidden="true" class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,22 +106,11 @@
                         </div>
                       </div>
                     </div>
-                        <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                        <div class="grid gap-4 mb-4 sm:grid-cols-1">
+                            
                             <div>
-                                <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Country</label>
-                                <select id="category" v-model="currency.country_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                    <option selected="">Select country</option>
-                                    <option v-for="country in countries" :key="country.id" :value="country.id">
-                                        {{ country?.name }}
-                                    </option>
-                                </select>
-                                <div v-if="validationErr.country_id" class="text-red-500 text-xs mt-1">
-                                    {{ validationErr?.country_id[0] }}
-                                </div>
-                            </div>
-                            <div>
-                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Currency Name</label>
-                                <input type="text" v-model="currency.name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="">
+                                <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role Name</label>
+                                <input type="text" v-model="role.name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="">
                                 <div v-if="validationErr.name" class="text-red-500 text-xs mt-1">
                                   {{ validationErr.name[0] }}
                                 </div>
@@ -136,50 +134,41 @@
 
 <script setup>
 import AdminPageComponent from '@/components/Admin/AdminPageComponent.vue';
-import { useCountryStore } from '@/stores/admincountry';
+import { useRoleStore } from '@/stores/roles';
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { FwbButton, FwbModal } from 'flowbite-vue'
 
+const store = useRoleStore()
 
-const store = useCountryStore()
-
-
-const currencies = computed(() => store.currencies)
 const notification = computed(() => store.notification)
 const isLoading = computed(() => store.isLoading)
-const countries = computed(() => store.countries)
-
+const roles = computed(() => store.roles)
 
 
 const isShowModal = ref(false)
 const isEditing = ref(false)
 
-const currency = ref({
-    country_id: '',
+
+const role = ref({
     name: ''
 })
 
-watch(() => store.currentCurrency,
+watch(() => store.currentRole,
             (newVal, oldVal) => {
                 if (newVal !== undefined) {
-                        currency.value = {
+                    role.value = {
                         ...JSON.parse(JSON.stringify(newVal))
                     }
                 }
-                
             }
 )
 
 const validationErr = ref({})
 
-
 function validateForm() {
     validationErr.value = {}
 
-    if (!currency.value.country_id) {
-        validationErr.value.country_id = ['Country is required']
-    }
-    if (!currency.value.name) {
+    if (!role.value.name) {
         validationErr.value.name = ['Name is required']
     }
 
@@ -189,8 +178,7 @@ function validateForm() {
 function closeModal() {
     isShowModal.value = false
     isEditing.value = false
-    currency.value = {
-        country_id: '',
+    role.value = {
         name: ''
     }
 }
@@ -198,15 +186,12 @@ function closeModal() {
 function showModal() {
     isShowModal.value = true
     isEditing.value = false
-    currency.value = {
-        country_id: '',
-        name: ''
-    }
+    role.value = { name: ''}
 }
 
-function openEditModal(selectedCurrency) {
-    if (selectedCurrency) {
-        store.getCurrency(selectedCurrency)
+function openEditModal(selectedRole) {
+    if (selectedRole) {
+        store.getRole(selectedRole)
     }
     isShowModal.value = true
     isEditing.value = true
@@ -214,21 +199,21 @@ function openEditModal(selectedCurrency) {
 
 const errMsg = ref(false)
 
-function saveCurrency(e) {
-    e.preventDefault();
+
+function saveRole(e) {
+    e.preventDefault()
 
     if (validateForm()) {
         const action = isEditing.value ? 'updated' : 'created'
-        const apiCall = isEditing.value ? store.updateCurrency : store.createCurrency
-        apiCall({...currency.value})
+        const apiCall = isEditing.value ? store.updateRole : store.createRole
+        apiCall({...role.value})
             .then(() => {
                 store.notify({
                     type: 'success',
-                    message: 'The currency was successfully ' + action
+                    message: 'The Role was successfully ' + action
                 })
                 closeModal()
-                store.getCurrencies()
-                store.getCountries()
+                store.getRoles()
             })
             .catch((err) => {
                 errMsg.value = err.response.data
@@ -237,8 +222,7 @@ function saveCurrency(e) {
                     validationErr.value = false
                     errMsg.value = false
                 }, 3000)
-                store.getCountries()
-                store.getCurrencies()
+                store.getRoles()
             })
     } else {
         setTimeout(() => {
@@ -249,8 +233,6 @@ function saveCurrency(e) {
 
 
 onBeforeMount(() => {
-    store.getCountries()
-    store.getCurrencies()
+    store.getRoles()
 })
-
 </script>

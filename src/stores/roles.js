@@ -3,16 +3,19 @@ import { ref } from "vue";
 import axiosAdmin from "../../axios/axiosAdmin";
 
 
-export const useAdminStaffStore = defineStore('adminstaff', {
+
+export const useRoleStore = defineStore('roles', {
     state: () => ({
-        staffs: [],
-        currentStaff: [],
+        roles: [],
+        currentRole: [],
         notification: {
             show: false,
             type: null,
             message: null
         },
-        isLoading: ref(true)
+        isLoading: ref(true),
+        rolePermissions: [],
+        permissions: []
     }),
     actions: {
         notify({message, type}) {
@@ -23,43 +26,52 @@ export const useAdminStaffStore = defineStore('adminstaff', {
                 this.notification.show = false
             }, 3000)
         },
-        createStaff(staff) {
+        createRole(role) {
             this.isLoading = true
-            return axiosAdmin.post('/staffs', staff)
+            return axiosAdmin.post('/roles', role)
                 .then((res) => {
-                    this.staffs = res.data.data
+                    this.roles = res.data.data
                     this.isLoading = false
                 })
         },
-        getStaffs() {
+        getRoles() {
             this.isLoading = true
-            return axiosAdmin.get('/staffs')
+            return axiosAdmin.get('/roles')
                 .then((res) => {
-                    this.staffs = res.data.data
+                    this.roles = res.data.data
                     this.isLoading = false
                 })
         },
-        getStaff(id) {
+        getRole(id) {
             this.isLoading = true
-            return axiosAdmin.get(`/staffs/${id}`)
+            return axiosAdmin.get(`/roles/${id}`)
                 .then((res) => {
-                    this.currentStaff = res.data.data
+                    this.currentRole = res.data.data
                     this.isLoading = false
                 })
         },
-        updateStaff(staffs) {
+        updateRole(role) {
             this.isLoading = true
-            return axiosAdmin.put(`/staffs/${staffs.id}`, staffs)
+            return axiosAdmin.put(`/roles/${role.id}`, role)
                 .then((res) => {
-                    this.currentStaff = res.data.data
+                    this.currentRole = res.data.data
                     this.isLoading = false
                 })
         },
-        deleteStaff(id) {
+        deleteRole(id) {
             this.isLoading = true
-            return axiosAdmin.delete(`/staffs/${id}`)
+            return axiosAdmin.delete(`/roles/${id}`)
                 .then((res) => {
                     this.isLoading = false
+                })
+        },
+        getRolePermissions(id) {
+            this.isLoading = true
+            return axiosAdmin.get(`/roles/${id}/give-permissions`)
+                .then((res) => {
+                    this.currentRole = res.data.role
+                    this.rolePermissions = res.data.rolePermissions
+                    this.permissions = res.data.permissions
                 })
         }
     }
