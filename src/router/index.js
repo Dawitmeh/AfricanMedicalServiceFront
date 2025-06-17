@@ -182,6 +182,8 @@ router.beforeEach((to, from, next) => {
             return next({ name: 'ClientDashboard' });
         } else if (clientStore.clients.user_type === 'admin') {
             return next({ name: 'AdminDashboard' });
+        } else {
+            return next({name: 'Login'})
         }
     }
   
