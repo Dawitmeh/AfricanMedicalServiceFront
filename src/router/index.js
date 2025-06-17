@@ -138,29 +138,64 @@ const router = createRouter({
 })
 
 
+// router.beforeEach((to, from, next) => {
+//     const clientStore = useClientStore()
+
+//     if (!clientStore.clients.token && sessionStorage.getItem('TOKEN')) {
+//         clientStore.clients.token = sessionStorage.getItem('TOKEN')
+//         clientStore.clients.data = JSON.parse(sessionStorage.getItem('USER_DATA') || '{}')
+//         clientStore.clients.user_type = sessionStorage.getItem('USER_TYPE')
+//     }
+
+//     // console.log('USER type', clientStore.clients.user_type)
+
+//     if (to.meta.requiresAuth && !clientStore.clients.token) {
+//         next({ name: 'Login' })
+//     } else if (to.meta.isGuest && clientStore.clients.token) {
+//         if (clientStore.clients.user_type === 'client') {
+//             next({ name: 'ClientDashboard' })
+//         } else {
+//             next(false)
+//         }
+//     } else {
+//         next()
+//     }
+// })
+
 router.beforeEach((to, from, next) => {
-    const clientStore = useClientStore()
+    const clientStore = useClientStore();
 
     if (!clientStore.clients.token && sessionStorage.getItem('TOKEN')) {
-        clientStore.clients.token = sessionStorage.getItem('TOKEN')
-        clientStore.clients.data = JSON.parse(sessionStorage.getItem('USER_DATA') || '{}')
-        clientStore.clients.user_type = sessionStorage.getItem('USER_TYPE')
+        clientStore.clients.token = sessionStorage.getItem('TOKEN');
+        clientStore.clients.data = JSON.parse(sessionStorage.getItem('USER_DATA') || '{}');
+        clientStore.clients.user_type = sessionStorage.getItem('USER_TYPE'); // Should be 'admin' or 'client'
     }
-
-    // console.log('USER type', clientStore.clients.user_type)
-
+  
     if (to.meta.requiresAuth && !clientStore.clients.token) {
-        next({ name: 'Login' })
-    } else if (to.meta.isGuest && clientStore.clients.token) {
-        if (clientStore.clients.user_type === 'client') {
-            next({ name: 'ClientDashboard' })
-        } else {
-            next(false)
-        }
-    } else {
-        next()
+        // User is not authenticated
+        return next({ name: 'Login' });
     }
-})
+  
+    if (to.meta.isGuest && clientStore.clients.token) {
+        // Authenticated user should not visit guest routes
+        if (clientStore.clients.user_type === 'client') {
+            return next({ name: 'ClientDashboard' });
+        } else if (clientStore.clients.user_type === 'admin') {
+            return next({ name: 'AdminDashboard' });
+        }
+    }
+  
+    if (to.meta.requiresAuth && to.meta.userType && to.meta.userType !== clientStore.clients.user_type) {
+        // User is trying to access a route meant for a different role
+        if (clientStore.clients.user_type === 'admin') {
+            return next({ name: 'AdminDashboard' });
+        } else if (clientStore.clients.user_type === 'client') {
+            return next({ name: 'ClientDashboard' });
+        }
+    }
+  
+    next();
+});
 
 
 export default router

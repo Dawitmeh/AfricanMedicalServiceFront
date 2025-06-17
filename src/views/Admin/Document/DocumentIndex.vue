@@ -276,12 +276,14 @@ watch(() => store.currentDocument,
             (newVal, oldVal) => {
                 if (newVal !== undefined) {
                     document.value = {
-                        ...JSON.parse(JSON.stringify(newVal))
+                        ...JSON.parse(JSON.stringify(newVal)),
+                        document: null,
+                        document_url: getDocumentUrl(newVal.document)
                     }
                 }
 
                 // imagePreview.value = newVal.document
-                selectedFiles.value = newVal.document
+                selectedFiles.value = [getDocumentUrl(newVal.document)]
             }
 )
 
@@ -296,7 +298,7 @@ function validateForm() {
     if (!document.value.type_id) {
         validationErr.value.type_id = ['Document type is required']
     }
-    if (!document.value.document) {
+    if (!document.value.document && !isEditing.value) {
         validationErr.value.document = ['Document file is required']
     }
 
@@ -333,22 +335,6 @@ function openEditModal(selectedDocument) {
     isEditing.value = true
 }
 
-// function onImageChoose(event) {
-//   const file = event.target.files[0]
-//   if (!file) return
-
-//   selectedFiles.value = file
-//   document.value.image = file // send this to backend
-
-//   const reader = new FileReader()
-//   reader.onload = () => {
-//     imagePreview.value = reader.result
-//     document.value.document_url = reader.result // preview only
-//     document.value.document = reader.result
-//   }
-
-//   reader.readAsDataURL(file)
-// }
 const getDocumentUrl = (path) => {
     return path ? `/${path}` : ''
 }
@@ -377,6 +363,9 @@ function saveDocument(e) {
     e.preventDefault()
 
     if (validateForm()) {
+        if (document.value.document) {
+            document.value.document = document.value.document
+        }
         const action = isEditing.value ? 'updated' : 'created'
         const apiCall = isEditing.value ? store.updateDocument : store.createDocument
         apiCall({...document.value})

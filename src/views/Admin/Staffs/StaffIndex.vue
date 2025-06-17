@@ -99,9 +99,12 @@
                         <td class="px-6 py-4">
                             {{ staff?.email }} 
                         </td>
-                        <td class="px-6 py-4">
-                           {{ 'Staff' }}
-                        </td>
+                        <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                              <div v-for="role in staff?.roles" class="flex items-center">
+                                  
+                                  <span class="ml-1 text-gray-500 dark:text-gray-400">{{role?.name}},</span>
+                              </div>
+                          </td>
                         <td class="px-6 py-4">
                             <!-- Modal toggle -->
                             <button @click="openEditModal(staff.id)" type="button" data-modal-target="editUserModal" data-modal-show="editUserModal" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
@@ -183,6 +186,18 @@
                                         {{ validationErr.phone[0] }}
                                     </div>
                                 </div>
+                                <div>
+                                    <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
+                                    <select multiple id="category" v-model="staff.role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                        <option selected="">Select country</option>
+                                        <option v-for="role in roles" :key="role.id" :value="role.name">
+                                            {{ role?.name }}
+                                        </option>
+                                    </select>
+                                    <!-- <div v-if="validationErr.country_id" class="text-red-500 text-xs mt-1">
+                                        {{ validationErr?.country_id[0] }}
+                                    </div> -->
+                                </div>
                             <div>
                                 <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                                 <input type="password" v-model="staff.password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -221,14 +236,17 @@ import { useCountryStore } from '@/stores/admincountry';
 import { useAdminStaffStore } from '@/stores/adminstaff';
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import { FwbButton, FwbModal } from 'flowbite-vue'
+import { useRoleStore } from '@/stores/roles';
 
 const store = useAdminStaffStore()
 const countryStore = useCountryStore()
+const roleStore = useRoleStore()
 
 const isLoading = computed(() => store.isLoading)
 const notification = computed(() => store.notification)
 const staffs = computed(() => store.staffs)
 const countries = computed(() => countryStore.countries)
+const roles = computed(() => roleStore.roles)
 
 const staff = ref({
     name: '',
@@ -236,7 +254,8 @@ const staff = ref({
     phone: '',
     password: '',
     password_confirmation: '',
-    country_code: ''
+    country_code: '',
+    role: []
 })
 
 const isShowModal = ref(false)
@@ -291,11 +310,29 @@ function validateForm() {
 function closeModal() {
     isShowModal.value = false
     isEditing.value = false
+    staff.value = {
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        password_confirmation: '',
+        country_code: '',
+        role: []
+    }
 }
 
 function showModal() {
     isShowModal.value = true
     isEditing.value = false
+    staff.value = {
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        password_confirmation: '',
+        country_code: '',
+        role: []
+    }
 }
 
 function openEditModal(selectedStaff) {
@@ -343,5 +380,6 @@ function saveStaff(e) {
 onBeforeMount(() => {
     store.getStaffs()
     countryStore.getCountries()
+    roleStore.getRoles()
 })
 </script>

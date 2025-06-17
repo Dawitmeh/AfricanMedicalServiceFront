@@ -73,6 +73,14 @@ export const useRoleStore = defineStore('roles', {
                     this.rolePermissions = res.data.rolePermissions
                     this.permissions = res.data.permissions
                 })
+        },
+        updateRolePermission(role) {
+            this.isLoading = true
+            return axiosAdmin.put(`/roles/${role.id}/give-permissions`, role)
+                .then((res) => {
+                    this.currentRole = res.data.role
+                    this.isLoading = false
+                })
         }
     }
 })

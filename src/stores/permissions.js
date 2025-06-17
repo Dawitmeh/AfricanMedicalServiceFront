@@ -45,7 +45,7 @@ export const usePermissionStore = defineStore('permissions', {
             return axiosAdmin.get(`/permission/${id}`)
                 .then((res) => {
                     this.currentPermission = res.data.data
-                    this.isLoading = true
+                    this.isLoading = false
                 })
         },
         updatePermission(permission) {

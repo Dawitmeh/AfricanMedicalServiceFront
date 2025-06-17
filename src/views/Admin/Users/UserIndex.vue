@@ -258,10 +258,21 @@
                             <div>
                                 <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
                                 <input type="password" v-model="client.password_confirmation" name="confirm-password" id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <!-- <div v-if="validationErr.password_confirmation" class="text-red-500 text-xs mt-1">
+                                <div v-if="validationErr.password_confirmation" class="text-red-500 text-xs mt-1">
                                         {{ validationErr.password_confirmation[0] }}
-                                    </div>  -->
+                                    </div> 
                             </div>
+                            <label class="inline-flex items-center me-5 cursor-pointer">
+                                <input 
+                                    type="checkbox"
+                                    class="sr-only peer"
+                                    v-model="client.status"
+                                    :true-value="'Active'"
+                                    :false-value="'Inactive'"
+                                >
+                                <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Active</span>
+                            </label>
 
                         </div>
                         <div class="flex justify-between">
@@ -306,7 +317,8 @@ const client = ref({
     image: '',
     image_url: '',
     password: '',
-    password_confirmation: ''
+    password_confirmation: '',
+    status: ''
 })
 
 const isShowModal = ref(false)
@@ -362,9 +374,9 @@ function validateForm() {
     if (!client.value.password) {
         validationErr.value.password = ['Password is required']
     }
-    // if (!client.value.password_confirmation) {
-    //     validationErr.value.password_confirmation = ['Password confirmation is required']
-    // }
+    if (!client.value.password_confirmation && !isEditing.value) {
+        validationErr.value.password_confirmation = ['Password confirmation is required']
+    }
 
     return Object.keys(validationErr.value).length === 0
 }
