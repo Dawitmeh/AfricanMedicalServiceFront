@@ -108,12 +108,25 @@
                         <td class="px-6 py-4">
                             <!-- Modal toggle -->
                             <button @click="openEditModal(staff.id)" type="button" data-modal-target="editUserModal" data-modal-show="editUserModal" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
-                            <router-link v-if="staff?.id" :to="{name: 'AdminStaffView', params: {id: staff.id}}" class="inline-flex ml-3 font-medium items-center text-theme-main hover:underline">
+                            <!-- <router-link v-if="staff?.id" :to="{name: 'AdminStaffView', params: {id: staff.id}}" class="inline-flex ml-3 font-medium items-center text-theme-main hover:underline">
                                 Detail
                                 <svg class="w-3 h-3 ms-2.5 rtl:rotate-[270deg]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11v4.833A1.166 1.166 0 0 1 13.833 17H2.167A1.167 1.167 0 0 1 1 15.833V4.167A1.166 1.166 0 0 1 2.167 3h4.618m4.447-2H17v5.768M9.111 8.889l7.778-7.778"/>
                                 </svg>
-                            </router-link>
+                            </router-link> -->
+                            <!-- <button @click="onRemove(staff?.id)" class="ml-6 inline-flex font-medium items-center text-red-600 hover:underline">
+                                Remove
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ms-2.5 rtl:rotate-[270deg]">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                </svg>
+                            </button> -->
+                            <button @click="showDeleteModal(staff.id)" class="ml-6 inline-flex font-medium items-center text-red-600 hover:underline">
+                                Remove
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ms-2.5 rtl:rotate-[270deg]">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                </svg>
+                            </button>
+                           
                         </td>
                     </tr>
                 </tbody>
@@ -185,6 +198,9 @@
                                     <div v-if="validationErr.phone" class="text-red-500 text-xs mt-1">
                                         {{ validationErr.phone[0] }}
                                     </div>
+                                     <div v-if="validationErr.country_code" class="text-red-500 text-xs mt-1">
+                                        {{ validationErr.country_code[0] }}
+                                    </div>
                                 </div>
                                 <div>
                                     <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Role</label>
@@ -194,9 +210,9 @@
                                             {{ role?.name }}
                                         </option>
                                     </select>
-                                    <!-- <div v-if="validationErr.country_id" class="text-red-500 text-xs mt-1">
-                                        {{ validationErr?.country_id[0] }}
-                                    </div> -->
+                                    <div v-if="validationErr.role" class="text-red-500 text-xs mt-1">
+                                        {{ validationErr?.role[0] }}
+                                    </div>
                                 </div>
                             <div>
                                 <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
@@ -226,6 +242,43 @@
                     </form>
             </template>
         </fwb-modal>
+
+
+        <!-- Modal3 -->
+          <FwbModal v-if="isShowModal2" @close="closeDeleteModal">
+            <template #header>
+                <div class="text-lg font-semibold text-gray-700 dark:text-white">
+                    Confirm Deletion
+                </div>
+                </template>
+                <template #body>
+                <div v-if="isLoading" class="text-center">
+                    <div role="status">
+                        <svg aria-hidden="true" class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                        </svg>
+                    </div>
+                </div>
+                <div v-else class="text-center p-4">
+                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>
+                    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                        Are you sure you want to delete this staff member?
+                    </h3>
+                    <div class="flex justify-center gap-4">
+                     <button @click="onRemove(deleteId)" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5">
+                        Yes, I'm sure
+                     </button>
+                     <button @click="closeDeleteModal" class="py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:text-white">
+                        No, cancel
+                     </button>
+                </div>
+                </div>
+            </template>
+            </FwbModal>
     </AdminPageComponent>
 </template>
 
@@ -260,6 +313,18 @@ const staff = ref({
 
 const isShowModal = ref(false)
 const isEditing = ref(false)
+const isShowModal2 = ref(false)
+
+const deleteId = ref(null)
+
+function showDeleteModal(id) {
+  deleteId.value = id
+  isShowModal2.value = true
+}
+
+function closeDeleteModal() {
+    isShowModal2.value = false
+}
 
 watch(() => store.currentStaff,
             (newVal, oldVal) => {
@@ -294,10 +359,13 @@ function validateForm() {
     if (!staff.value.phone) {
         validationErr.value.phone = ['Phone is required']
     }
-    if (!staff.value.password) {
+    if (!staff.value.role) {
+        validationErr.value.role = ['Role is required']
+    }
+    if (!staff.value.password && !isEditing.value) {
         validationErr.value.password = ['Password is required']
     }
-    if (!staff.value.password_confirmation) {
+    if (!staff.value.password_confirmation && !isEditing.value) {
         validationErr.value.password_confirmation = ['Password confirmation is required']
     }
     if (!staff.value.country_code) {
@@ -374,6 +442,18 @@ function saveStaff(e) {
             validationErr.value = false
         }, 3000)
     }
+}
+
+function onRemove(staffId) {
+    store.deleteStaff(staffId)
+            .then((res) => {
+                store.notify({
+                    type: 'success',
+                    message: 'The staff was successfully deleted'
+                })
+                store.getStaffs()
+                closeDeleteModal()
+            })
 }
 
 

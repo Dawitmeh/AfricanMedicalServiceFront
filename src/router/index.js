@@ -27,6 +27,10 @@ import StaffView from "@/views/Admin/Staffs/StaffView.vue"
 import RoleIndex from "@/views/Admin/Roles/RoleIndex.vue"
 import PermissionIndex from "@/views/Admin/Permissions/PermissionIndex.vue"
 import RoleView from "@/views/Admin/Roles/RoleView.vue"
+import FleetView from "@/views/Admin/Fleets/FleetView.vue"
+import BlogIndex from "@/views/Admin/Blog/BlogIndex.vue"
+import BlogView from "@/views/Admin/Blog/BlogView.vue"
+import BlogCategory from "@/views/Admin/Blog/BlogCategory.vue"
 
 const routes = [
 
@@ -103,6 +107,7 @@ const routes = [
 
             // Fleets
             {path: '/adminfleet', name: 'AdminFleet', component: FleetIndex},
+            {path: '/adminfleet/view/:id', name: 'AdminFleetView', component: FleetView},
 
             // currency
             {path: '/admincurrency', name: 'AdminCurrency', component: CurrencyIndex},
@@ -126,7 +131,12 @@ const routes = [
             // Role & Permissions
             {path: '/roles', name: 'Roles', component: RoleIndex},
             {path: '/role/view/:id', name: 'RoleView', component: RoleView},
-            {path: '/permissions', name: 'Permissions', component: PermissionIndex}
+            {path: '/permissions', name: 'Permissions', component: PermissionIndex},
+
+            // Blogs
+            {path: '/adminblogs', name: 'AdminBlog', component: BlogIndex},
+            {path: '/adminblog/view/:id', name: 'AdminBlogView', component: BlogView},
+            {path: '/blogcategory', name: 'BlogCategory', component: BlogCategory}
         ]
     }
 

@@ -232,6 +232,19 @@ function savePermission(e) {
     }
 }
 
+function onRemove(permissionId) {
+  if (confirm('Are you sure you want to delete this permission ?')) {
+    store.deletePermission(permissionId)
+      .then((res) => {
+        store.notify({
+          type: 'success',
+          message: 'The permission was successfully deleted'
+        })
+        store.getPermissions()
+      })
+  }
+}
+
 
 onBeforeMount(() => {
     store.getPermissions()

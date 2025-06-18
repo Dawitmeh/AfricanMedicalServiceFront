@@ -33,7 +33,6 @@ export const useAdminStore = defineStore('admin', {
         login(admin) {
             return axiosAdmin.post('/adminlogin', admin)
                 .then(({ data }) => {
-                    console.log(data)
                     this.admin.data = data.user
                     this.admin.token = data.token
                     this.admin.user_type = data.user.userType
